@@ -15,27 +15,21 @@ class Build(val context: Context) extends BaseBuild { outer =>
         "io.circe" %% "circe-core" % circeVersion,
         "io.circe" %% "circe-generic" % circeVersion,
         "io.circe" %% "circe-parser" % circeVersion,
-        "io.circe" %% "circe-java8" % circeVersion,
-        "com.fortysevendeg" %% "lambda-test" % "1.3.0"
+        "io.circe" %% "circe-java8" % circeVersion
       )
   )
 
   override def test: Dependency = {
     val testDirectory = projectDirectory / "src" / "test"
     new BasicBuild(context.copy(workingDirectory = testDirectory)) {
-      println("projectDir")
-      println(projectDirectory)
-      println("creating build")
-//      override def sources: Seq[File] = Seq(testDirectory)
-
-      override def sources: Seq[File] = (
-        Seq[File]() ++
-          projectDirectory.listRecursive.toVector.filter(_.toString.endsWith(".scala"))
-      )
-
-      println(sources)
-
-      override def dependencies = outer.dependencies ++ super.dependencies
+      override def defaultScalaVersion: String = outer.defaultScalaVersion
+      override def fork = true //Tests won't load due to classloader issues without forking
+//      override def flatClassLoader = true
+      override def dependencies =
+        super.dependencies ++
+          Resolver(mavenCentral, sonatypeReleases).bind(
+            "com.fortysevendeg" %% "lambda-test" % "1.3.0"
+          ) :+ outer
       def apply = run
     }
   }
