@@ -15,8 +15,7 @@ class Build(val context: Context) extends BaseBuild { outer =>
         "io.circe" %% "circe-core" % circeVersion,
         "io.circe" %% "circe-generic" % circeVersion,
         "io.circe" %% "circe-parser" % circeVersion,
-        "io.circe" %% "circe-java8" % circeVersion,
-        "com.fortysevendeg" %% "lambda-test" % "1.3.0"
+        "io.circe" %% "circe-java8" % circeVersion
       )
   )
 
@@ -31,6 +30,7 @@ class Build(val context: Context) extends BaseBuild { outer =>
           Resolver(mavenCentral, sonatypeReleases).bind(
             "com.fortysevendeg" %% "lambda-test" % "1.3.0"
           ) :+ outer
+
       def apply = run
     }
   }
