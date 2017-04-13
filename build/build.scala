@@ -15,7 +15,8 @@ class Build(val context: Context) extends BaseBuild { outer =>
         "io.circe" %% "circe-core" % circeVersion,
         "io.circe" %% "circe-generic" % circeVersion,
         "io.circe" %% "circe-parser" % circeVersion,
-        "io.circe" %% "circe-java8" % circeVersion
+        "io.circe" %% "circe-java8" % circeVersion,
+        "com.fortysevendeg" %% "lambda-test" % "1.3.0"
       )
   )
 
