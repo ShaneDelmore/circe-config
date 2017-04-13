@@ -2,7 +2,7 @@ package circe_config_build
 import cbt._
 import java.io.File
 
-class Build(val context: Context) extends BaseBuild { outer =>
+class Build(val context: Context) extends BaseBuild with SbtLayout { outer =>
   override def defaultScalaVersion: String = "2.12.1"
 
   val circeVersion = "0.7.1"
@@ -19,19 +19,25 @@ class Build(val context: Context) extends BaseBuild { outer =>
       )
   )
 
-  override def test: Dependency = {
-    val testDirectory = projectDirectory / "src" / "test"
-    new BasicBuild(context.copy(workingDirectory = testDirectory)) {
+}
+
+trait SbtLayout { outer: BaseBuild =>
+  override def sources = Seq(projectDirectory ++ "/src/main/scala")
+
+  override def test: Dependency =
+    new BasicBuild(context) {
       override def defaultScalaVersion: String = outer.defaultScalaVersion
       override def fork = true //Tests won't load due to classloader issues without forking
-//      override def flatClassLoader = true
+      //      override def flatClassLoader = true
+
+      override def sources = Seq(projectDirectory ++ "/src/test/scala")
+      override def compileTarget = super.compileTarget.getParentFile ++ "/test-classes"
+
       override def dependencies =
         super.dependencies ++
           Resolver(mavenCentral, sonatypeReleases).bind(
             "com.fortysevendeg" %% "lambda-test" % "1.3.0"
           ) :+ outer
 
-      def apply = run
     }
-  }
 }
